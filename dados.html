@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Dados Randômicos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    select, button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    select {
+      background-color: #fff;
+      color: #333;
+    }
+    button {
+      background-color: #2575fc;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #6a11cb;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Dados Randômicos</h1>
+    <select id="dataType">
+      <option value="cpf">CPF</option>
+      <option value="cep">CEP</option>
+      <option value="phone">Telefone</option>
+      <option value="plate">Placa de Carro</option>
+      <option value="random">Número Randômico</option>
+    </select>
+    <button onclick="generateData()">Gerar</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function generateData() {
+      const dataType = document.getElementById('dataType').value;
+      let result = '';
+
+      if (dataType === 'cpf') {
+        result = `${padNumber(getRandomNumber(0, 999), 3)}.${padNumber(getRandomNumber(0, 999), 3)}.${padNumber(getRandomNumber(0, 999), 3)}-${padNumber(getRandomNumber(0, 99), 2)}`;
+      } else if (dataType === 'cep') {
+        result = `${padNumber(getRandomNumber(0, 99999), 5)}-${padNumber(getRandomNumber(0, 999), 3)}`;
+      } else if (dataType === 'phone') {
+        result = `(${getRandomNumber(11, 99)})${getRandomNumber(90000, 99999)}-${padNumber(getRandomNumber(0, 9999),4)}`;
+      } else if (dataType === 'plate') {
+        result = `${getRandomLetter()}${getRandomLetter()}${getRandomLetter()}-${padNumber(getRandomNumber(0, 99),2)}${getRandomLetter()}${getRandomNumber(0, 9)}`;
+      } else if (dataType === 'random') {
+        result = getRandomNumber(0, 1000000).toLocaleString('pt-BR');
+      }
+
+      document.getElementById('result').innerText = result;
+    }
+
+    function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getRandomLetter() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return letters[Math.floor(Math.random() * letters.length)];
+    }
+
+    function padNumber(num, size) {
+      return String(num).padStart(size, '0');
+    }
+  </script>
+</body>
+</html>
