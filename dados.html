@@ -22,7 +22,7 @@
       text-align: center;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
-    select, button {
+    select, button, input {
       padding: 10px 20px;
       border-radius: 5px;
       border: none;
@@ -30,7 +30,7 @@
       font-size: 16px;
       cursor: pointer;
     }
-    select {
+    select, input {
       background-color: #fff;
       color: #333;
     }
@@ -47,25 +47,38 @@
       font-size: 20px;
       font-weight: bold;
     }
+    #passwordLength {
+      display: none;
+      width: 100px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Gerador de Dados Randômicos</h1>
-    <select id="dataType">
+    <select id="dataType" onchange="togglePasswordInput()">
       <option value="cpf">CPF</option>
       <option value="cep">CEP</option>
       <option value="phone">Telefone</option>
       <option value="plate">Placa de Carro</option>
       <option value="random">Número Randômico</option>
+      <option value="password">Senha</option>
     </select>
+    <input type="number" id="passwordLength" placeholder="Qtd de Caracteres" min="4" max="128">
     <button onclick="generateData()">Gerar</button>
     <div id="result"></div>
   </div>
 
   <script>
+    function togglePasswordInput() {
+      const dataType = document.getElementById('dataType').value;
+      const passwordInput = document.getElementById('passwordLength');
+      passwordInput.style.display = dataType === 'password' ? 'inline-block' : 'none';
+    }
+
     function generateData() {
       const dataType = document.getElementById('dataType').value;
+      const passwordLength = parseInt(document.getElementById('passwordLength').value);
       let result = '';
 
       if (dataType === 'cpf') {
@@ -73,14 +86,40 @@
       } else if (dataType === 'cep') {
         result = `${padNumber(getRandomNumber(0, 99999), 5)}-${padNumber(getRandomNumber(0, 999), 3)}`;
       } else if (dataType === 'phone') {
-        result = `(${getRandomNumber(11, 99)})${getRandomNumber(90000, 99999)}-${padNumber(getRandomNumber(0, 9999),4)}`;
+        result = `(${getRandomNumber(11, 99)})${getRandomNumber(90000, 99999)}-${padNumber(getRandomNumber(0, 9999), 4)}`;
       } else if (dataType === 'plate') {
-        result = `${getRandomLetter()}${getRandomLetter()}${getRandomLetter()}-${padNumber(getRandomNumber(0, 99),2)}${getRandomLetter()}${getRandomNumber(0, 9)}`;
+        result = `${getRandomLetter()}${getRandomLetter()}${getRandomLetter()}-${getRandomNumber(0, 9)}${getRandomLetter()}${padNumber(getRandomNumber(0, 99), 2)}`;
       } else if (dataType === 'random') {
         result = getRandomNumber(0, 1000000).toLocaleString('pt-BR');
+      } else if (dataType === 'password') {
+        if (!passwordLength || passwordLength < 4 || passwordLength > 128) {
+          alert('Por favor, insira uma quantidade válida de caracteres (4-128).');
+          return;
+        }
+        result = generatePassword(passwordLength);
       }
 
       document.getElementById('result').innerText = result;
+    }
+
+    function generatePassword(length) {
+      const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+      const numbers = '0123456789';
+      const specialChars = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+      const allChars = uppercase + lowercase + numbers + specialChars;
+
+      let password = '';
+      password += uppercase[Math.floor(Math.random() * uppercase.length)];
+      password += lowercase[Math.floor(Math.random() * lowercase.length)];
+      password += numbers[Math.floor(Math.random() * numbers.length)];
+      password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+      for (let i = 4; i < length; i++) {
+        password += allChars[Math.floor(Math.random() * allChars.length)];
+      }
+
+      return password.split('').sort(() => 0.5 - Math.random()).join('');
     }
 
     function getRandomNumber(min, max) {
